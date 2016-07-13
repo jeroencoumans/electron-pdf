@@ -68,7 +68,9 @@ function appReady () {
  * @param  {String} indexUrl The path to the HTML or url
  */
 function render (indexUrl, output) {
-  var wait = argv.w || argv.outputWait || 0
+  var start = Date.now()
+  var waitForTitle = argv.W || argv.waitForTitle || false
+  var wait = argv.w || argv.outputWait || waitForTitle ? 30000 : 0
   var win = new BrowserWindow({ width: 0, height: 0, show: false })
   win.on('closed', function () { win = null })
 
@@ -87,22 +89,33 @@ function render (indexUrl, output) {
     landscape: argv.l || argv.landscape || false
   }
 
-  win.webContents.on('did-finish-load', function () {
-    setTimeout(function () {
-      win.webContents.printToPDF(opts, function (err, data) {
+  function isReady () {
+    var hasTitle = waitForTitle ? waitForTitle === win.getTitle() : true
+    var hasWaited = wait > 0 ? Date.now() - start > wait : true
+
+    return hasTitle || hasWaited
+  }
+
+  function printWhenReady () {
+    if (!isReady()) {
+      return setTimeout(printWhenReady, 100)
+    }
+
+    win.webContents.printToPDF(opts, function (err, data) {
+      if (err) {
+        console.error(err)
+      }
+
+      fs.writeFile(path.resolve(output), data, function (err) {
         if (err) {
           console.error(err)
         }
-
-        fs.writeFile(path.resolve(output), data, function (err) {
-          if (err) {
-            console.error(err)
-          }
-          app.quit()
-        })
+        app.quit()
       })
     })
-  }, wait)
+  }
+
+  win.webContents.on('did-finish-load', printWhenReady)
 }
 
 function usage (code) {

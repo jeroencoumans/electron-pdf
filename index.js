@@ -68,9 +68,8 @@ function appReady () {
  * @param  {String} indexUrl The path to the HTML or url
  */
 function render (indexUrl, output) {
-  var start = Date.now()
   var waitForTitle = argv.W || argv.waitForTitle || false
-  var wait = argv.w || argv.outputWait || waitForTitle ? 30000 : 0
+  var wait = argv.w || argv.outputWait || 0
   var win = new BrowserWindow({ width: 0, height: 0, show: false })
   win.on('closed', function () { win = null })
 
@@ -89,18 +88,7 @@ function render (indexUrl, output) {
     landscape: argv.l || argv.landscape || false
   }
 
-  function isReady () {
-    var hasTitle = waitForTitle ? waitForTitle === win.getTitle() : true
-    var hasWaited = wait > 0 ? Date.now() - start > wait : true
-
-    return hasTitle || hasWaited
-  }
-
-  function printWhenReady () {
-    if (!isReady()) {
-      return setTimeout(printWhenReady, 100)
-    }
-
+  function print () {
     win.webContents.printToPDF(opts, function (err, data) {
       if (err) {
         console.error(err)
@@ -115,7 +103,17 @@ function render (indexUrl, output) {
     })
   }
 
-  win.webContents.on('did-finish-load', printWhenReady)
+  win.webContents.on('page-title-updated', function () {
+    if (win.getTitle() === waitForTitle) {
+      print()
+    }
+  })
+
+  win.webContents.on('did-finish-load', function () {
+    setTimeout(function () {
+      print()
+    }, wait)
+  })
 }
 
 function usage (code) {

@@ -83,7 +83,8 @@ $ electron-pdf https://fraserxu.me ~/Desktop/fraserxu.pdf
                                  2 - minimum
     -d | --disableCache        Disable HTTP caching
     -w | --outputWait          Integer – Time to wait (in MS) between page load and PDF creation
-    -W | --waitForTitle        String - Wait until window.title is equal to this string before rendering page, or until outputWait is done, whichever occurs first
+                                 0 - default
+    -W | --waitForTitle        String - Wait until window.title is equal to this string before rendering page, or until outputWait is done, whichever occurs first.
 
   Usage
     $ electron-pdf <input> <output>

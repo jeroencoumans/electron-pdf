@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NOT ready</title>
+  </head>
+  <body>
+    <p id='test'>error</p>
+    <script>
+      setTimeout(function () { document.getElementById('test').innerHTML = 'success'}, 1000)
+      setTimeout(function () { document.title = 'ready' }, 2000)
+    </script>
+  </body>
+</html>

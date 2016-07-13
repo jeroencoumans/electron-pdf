@@ -4,7 +4,7 @@
   "description": "A command line tool to generate PDF from URL, HTML or Markdown files",
   "main": "index.js",
   "scripts": {
-    "test": "standard"
+    "test": "standard && ./cli.js test.html test.pdf -W ready -w 10000"
   },
   "bin": {
     "electron-pdf": "cli.js"

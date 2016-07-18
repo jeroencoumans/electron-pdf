@@ -19,9 +19,9 @@ if (argv.v || argv.version) {
 }
 
 if (argv.h || argv.help) {
-  usage(1)
+  return usage(0)
 } else if (!input || !output) {
-  usage(1)
+  return usage(1)
 }
 
 app.on('ready', appReady)
@@ -69,7 +69,11 @@ function appReady () {
  */
 function render (indexUrl, output) {
   var waitForTitle = argv.W || argv.waitForTitle || false
-  var wait = argv.w || argv.outputWait || 0
+  var wait = argv.w || argv.outputWait
+  if (waitForTitle && !wait) {
+    console.log('Using default wait of 30 seconds until title appears (override with -w)')
+    wait = 30000
+  }
   var win = new BrowserWindow({ width: 0, height: 0, show: false })
   win.on('closed', function () { win = null })
 
@@ -118,6 +122,7 @@ function render (indexUrl, output) {
 
 function usage (code) {
   var rs = fs.createReadStream(path.join(__dirname, '/usage.txt'))
+
   rs.pipe(process.stdout)
   rs.on('close', function () {
     if (code) process.exit(code)

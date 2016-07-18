@@ -57,6 +57,23 @@ $ electron-pdf index.html ~/Desktop/index.pdf -c my-awesome-css.css
 $ electron-pdf https://fraserxu.me ~/Desktop/fraserxu.pdf
 ```
 
+### To generate a PDF from within a Docker container
+
+```
+$ docker build -t electron-pdf .
+$ docker run electron-pdf
+$ docker cp electron-pdf:/app/test.pdf docker-test.pdf .
+```
+
+### To run a test inside Docker
+
+```
+$ docker run -i -t electron-pdf /bin/bash
+$ Xvfb -ac -screen scrn 1280x2000x24 :9.0 & export DISPLAY=:9.0
+$ ./cli.js test.html test.pdf -W ready -w 5000
+
+```
+
 ### More
 
 ```
@@ -84,7 +101,9 @@ $ electron-pdf https://fraserxu.me ~/Desktop/fraserxu.pdf
     -d | --disableCache        Disable HTTP caching
     -w | --outputWait          Integer – Time to wait (in MS) between page load and PDF creation
                                  0 - default
-    -W | --waitForTitle        String - Wait until window.title is equal to this string before rendering page, or until outputWait is done, whichever occurs first.
+    -W | --waitForTitle        String - Wait until window.title is equal to this string before rendering page, or until outputWait is done, whichever occurs first. If no outputWait is provided, a default time out of 30 seconds will be used.
+                                 false - default
+
 
   Usage
     $ electron-pdf <input> <output>
